@@ -368,3 +368,5 @@ FodyWeavers.xsd
 results.json
 
 # Dependencies
+
+test.bin
