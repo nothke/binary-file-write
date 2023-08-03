@@ -3,6 +3,17 @@
 #include <array>
 #include <vector>
 
+struct Header {
+	int32_t version{ 1 };
+	int32_t dataSize{ 0 };
+
+	std::array<int32_t, 6> _padding;
+
+	Header() {
+		_padding.fill(0);
+	}
+};
+
 struct Frame {
 	float a{ 1 };
 	float b{ 2 };
@@ -12,24 +23,12 @@ struct Frame {
 	int a3{ 12345 };
 };
 
-struct Header {
-	int32_t version{ 1 };
-	int32_t dataSize{ 0 };
-
-	std::array<int, 7> padding;
-
-	Header() {
-		padding.fill(0);
-	}
-};
-
 int main(int argc, char* argv[])
 {
 	{
 		// Populate data with some values
 
 		Header header;
-
 		std::vector<Frame> frames;
 
 		for (size_t i = 0; i < 25; i++)
@@ -68,14 +67,13 @@ int main(int argc, char* argv[])
 
 		size_t dataSize = static_cast<size_t>(header.dataSize);
 
-		std::cout << "size: " << dataSize << "\n";
-
-		for (size_t i = 0; i < dataSize; i++)
-		{
-			frames.push_back({});
-		}
+		frames.resize(dataSize);
 
 		file.read(reinterpret_cast<char*>(frames.data()), sizeof(Frame) * dataSize);
+
+		// Output to console
+
+		std::cout << "size: " << dataSize << "\n";
 
 		for (size_t i = 0; i < frames.size(); i++)
 		{
